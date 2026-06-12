@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Nguyệt Quang Viên · Học Tiếng Trung HSK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lavender:#b9a9e0;
+    --lavender-deep:#6e5aa6;
+    --pink:#f3c6da;
+    --cream:#fbf5ee;
+    --ink:#2c2244;
+    --gold:#f0bd66;
+    --teal:#7fd0c4;
+    --ruby:#ec7fa0;
+    --sapphire:#7fb0ec;
+    --amethyst:#b894ec;
+    --emerald:#7fdca6;
+    --glass:rgba(255,255,255,.14);
+    --glass-strong:rgba(255,255,255,.22);
+    --glass-border:rgba(255,255,255,.38);
+    --shadow:0 8px 28px rgba(40,24,70,.35);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Quicksand',sans-serif;
+    color:var(--cream);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  /* ---------- background video ---------- */
+  .bg-video-wrap{
+    position:fixed; inset:0; z-index:-2; overflow:hidden;
+    background:#241a3c;
+  }
+  .bg-video-wrap video{
+    width:100%; height:100%; object-fit:cover;
+    filter:saturate(1.05);
+  }
+  .bg-overlay{
+    position:fixed; inset:0; z-index:-1;
+    background:
+      linear-gradient(180deg, rgba(35,24,58,.55) 0%, rgba(35,24,58,.35) 35%, rgba(28,18,48,.65) 100%);
+    backdrop-filter:blur(0.5px);
+  }
+  /* ---------- shell ---------- */
+  .app-shell{
+    max-width:480px; margin:0 auto;
+    min-height:100vh;
+    padding:22px 18px 40px;
+    display:flex; flex-direction:column;
+  }
+  /* gem icon - signature element */
+  .gem{
+    display:inline-block; width:14px; height:14px;
+    background:linear-gradient(135deg, var(--gold), var(--ruby));
+    transform:rotate(45deg);
+    border-radius:3px;
+    box-shadow:0 0 10px rgba(240,189,102,.6);
+    flex:none;
+  }
+  /* ---------- header / brand ---------- */
+  .brand{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom:18px;
+  }
+  .moon{
+    width:46px; height:46px; border-radius:50%; flex:none;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--lavender) 60%, var(--lavender-deep) 100%);
+    box-shadow:0 0 22px rgba(185,169,224,.65);
+  }
+  .brand-text h1{
+    font-family:'Baloo 2',sans-serif;
+    font-size:21px; margin:0; font-weight:700;
+    letter-spacing:.5px;
+  }
+  .brand-text p{
+    margin:2px 0 0; font-size:12.5px; opacity:.8; font-weight:500;
+  }
+  /* ---------- topbar for sub screens ---------- */
+  .topbar{
+    display:flex; align-items:center; gap:12px; margin-bottom:18px;
+  }
+  .back-btn{
+    width:40px; height:40px; border-radius:50%;
+    background:var(--glass); border:1px solid var(--glass-border);
+    color:var(--cream); font-size:18px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex:none; backdrop-filter:blur(8px);
+  }
+  .topbar-title{
+    font-family:'Baloo 2',sans-serif; font-size:19px; font-weight:700; flex:1;
+  }
+  .topbar-title small{
+    display:block; font-family:'Quicksand',sans-serif; font-weight:500; font-size:12px; opacity:.75; margin-top:2px;
+  }
+  /* ---------- screens ---------- */
+  .screen{ display:none; flex:1; flex-direction:column; }
+  .screen.active{ display:flex; animation:fadeIn .35s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+  /* ---------- glass panel ---------- */
+  .panel{
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    border-radius:26px;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:var(--shadow);
+    padding:20px;
+  }
+
+  /* ---------- HOME ---------- */
+  .home-hero{ text-align:center; margin:8px 0 26px; }
+  .home-hero h2{
+    font-family:'Baloo 2',sans-serif; font-size:26px; margin:0 0 8px; font-weight:800;
+  }
+  .home-hero p{ margin:0; font-size:14px; opacity:.85; line-height:1.6; }
+  .gem-grid{
+    display:flex; flex-direction:column; gap:14px; margin-top:auto; margin-bottom:auto;
+  }
+  .gem-card{
+    position:relative;
+    border-radius:24px;
+    padding:22px 14px 18px;
+    text-align:center;
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(12px);
+    cursor:pointer;
+    transition:transform .15s ease;
+    min-height:138px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:8px;
+  }
+  .gem-card:active{ transform:scale(.96); }
+  .gem-card .facet{
+    width:34px; height:34px; border-radius:8px;
+    transform:rotate(45deg);
+    margin-bottom:4px;
+  }
+  .gem-card.hsk1{ background:linear-gradient(155deg, rgba(236,127,160,.35), rgba(236,127,160,.08)); }
+  .gem-card.hsk1 .facet{ background:linear-gradient(135deg,#ffd7e3,var(--ruby)); box-shadow:0 0 16px rgba(236,127,160,.7);}
+  .gem-card.hsk2{ background:linear-gradient(155deg, rgba(127,176,236,.30), rgba(127,176,236,.07)); }
+  .gem-card.hsk2 .facet{ background:linear-gradient(135deg,#dbeaff,var(--sapphire)); box-shadow:0 0 16px rgba(127,176,236,.6);}
+  .gem-card.hsk3{ background:linear-gradient(155deg, rgba(184,148,236,.30), rgba(184,148,236,.07)); }
+  .gem-card.hsk3 .facet{ background:linear-gradient(135deg,#ecdcff,var(--amethyst)); box-shadow:0 0 16px rgba(184,148,236,.6);}
+  .gem-card.hsk4{ background:linear-gradient(155deg, rgba(127,220,166,.30), rgba(127,220,166,.07)); }
+  .gem-card.hsk4 .facet{ background:linear-gradient(135deg,#dafff0,var(--emerald)); box-shadow:0 0 16px rgba(127,220,166,.6);}
+  .gem-card h3{
+    font-family:'Baloo 2',sans-serif; font-size:20px; margin:0; font-weight:700;
+  }
+  .gem-card span.tag{
+    font-size:11.5px; opacity:.8; font-weight:600;
+  }
+  .gem-card.locked{ opacity:.55; }
+  .gem-card .lock{
+    position:absolute; top:12px; right:14px; font-size:14px; opacity:.85;
+  }
+  .gem-card{
+    min-height:112px;
+  }
+  .home-footer{
+    text-align:center; margin-top:24px; font-size:11.5px; opacity:.6; line-height:1.6;
+  }
+
+  /* ---------- HSK1 menu ---------- */
+  .mode-list{ display:flex; flex-direction:column; gap:12px; }
+  .mode-card{
+    display:flex; align-items:center; gap:14px;
+    padding:16px 16px;
+    border-radius:20px;
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(12px);
+    cursor:pointer;
+    transition:transform .15s ease, background .2s ease;
+  }
+  .mode-card:active{ transform:scale(.98); background:var(--glass-strong); }
+  .mode-icon{
+    width:46px; height:46px; border-radius:14px; flex:none;
+    display:flex; align-items:center; justify-content:center; font-size:22px;
+    background:linear-gradient(135deg, rgba(255,255,255,.35), rgba(255,255,255,.05));
+    border:1px solid var(--glass-border);
+  }
+  .mode-text h4{ margin:0 0 3px; font-family:'Baloo 2',sans-serif; font-size:16px; font-weight:700;}
+  .mode-text p{ margin:0; font-size:12.5px; opacity:.8; line-height:1.4; }
+  .mode-arrow{ margin-left:auto; opacity:.6; font-size:18px; }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    font-family:'Quicksand',sans-serif; font-weight:700; font-size:14px;
+    border:1px solid var(--glass-border);
+    background:var(--glass);
+    color:var(--cream);
+    border-radius:16px;
+    padding:12px 18px;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    transition:transform .12s ease, background .2s ease;
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .btn:active{ transform:scale(.96); }
+  .btn-primary{
+    background:linear-gradient(135deg, var(--gold), var(--ruby));
+    border:none; color:#3a2240;
+    box-shadow:0 6px 18px rgba(240,189,102,.35);
+  }
+  .btn-block{ width:100%; }
+  .btn-row{ display:flex; gap:10px; margin-top:16px; }
+  .btn-circle{
+    width:56px; height:56px; border-radius:50%; font-size:22px; flex:none;
+  }
+  .btn:disabled{ opacity:.45; cursor:default; }
+
+  /* ---------- flashcards ---------- */
+  .fc-stage{ flex:1; display:flex; flex-direction:column; }
+  .fc-progress{ text-align:center; font-size:12.5px; opacity:.75; margin-bottom:14px; font-weight:600; letter-spacing:.5px;}
+  .flashcard-wrap{ perspective:1200px; margin:6px 0 18px; flex:1; min-height:240px; }
+  .flashcard{
+    position:relative; width:100%; height:100%; min-height:240px;
+    border-radius:26px; cursor:pointer;
+    transform-style:preserve-3d; transition:transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .flashcard.flipped{ transform:rotateY(180deg); }
+  .fc-face{
+    position:absolute; inset:0; border-radius:26px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    backface-visibility:hidden;
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(14px);
+    padding:24px; text-align:center;
+  }
+  .fc-front{ background:linear-gradient(160deg, rgba(236,127,160,.28), rgba(255,255,255,.08)); }
+  .fc-back{ background:linear-gradient(160deg, rgba(127,176,236,.28), rgba(255,255,255,.08)); transform:rotateY(180deg); }
+  .fc-hanzi{ font-family:'Noto Sans SC',sans-serif; font-size:64px; font-weight:700; line-height:1; margin-bottom:10px;}
+  .fc-pinyin{ font-size:20px; opacity:.9; font-weight:600; letter-spacing:.5px;}
+  .fc-vi{ font-family:'Baloo 2',sans-serif; font-size:24px; font-weight:700; line-height:1.4;}
+  .fc-hint{ position:absolute; bottom:14px; font-size:11px; opacity:.6; font-weight:600; }
+
+  /* ---------- quiz ---------- */
+  .quiz-top{ display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; opacity:.85; margin-bottom:14px; }
+  .quiz-card{ text-align:center; padding:28px 16px; margin-bottom:18px; }
+  .quiz-hanzi{ font-family:'Noto Sans SC',sans-serif; font-size:54px; font-weight:700; margin-bottom:8px; }
+  .quiz-pinyin{ font-size:18px; opacity:.85; font-weight:600; margin-bottom:10px;}
+  .quiz-prompt{ font-size:13px; opacity:.75; font-weight:600; }
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .option{
+    display:flex; align-items:center; gap:12px; text-align:left;
+    padding:14px 16px; border-radius:16px;
+    background:var(--glass); border:1px solid var(--glass-border);
+    backdrop-filter:blur(10px); cursor:pointer; font-family:'Quicksand',sans-serif;
+    font-weight:600; font-size:14.5px; color:var(--cream);
+  }
+  .option .opt-letter{
+    width:28px; height:28px; border-radius:50%; flex:none;
+    background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',sans-serif; font-weight:700; font-size:13px;
+  }
+  .option .opt-hanzi{ font-family:'Noto Sans SC',sans-serif; font-size:22px; font-weight:700; }
+  .option .opt-py{ font-size:11.5px; opacity:.75; font-weight:600; display:block; margin-top:2px;}
+  .option.correct{ background:rgba(127,220,166,.35); border-color:rgba(127,220,166,.7); }
+  .option.wrong{ background:rgba(236,127,160,.35); border-color:rgba(236,127,160,.7); }
+  .option.disabled{ pointer-events:none; opacity:.7; }
+  .quiz-actions{ margin-top:16px; }
+  .result-box{ text-align:center; padding:36px 20px; }
+  .result-box .big{ font-family:'Baloo 2',sans-serif; font-size:30px; font-weight:800; margin-bottom:8px;}
+
+  /* ---------- dictation ---------- */
+  .dict-card{ text-align:center; padding:32px 16px; margin-bottom:18px; }
+  .dict-play{
+    width:78px; height:78px; border-radius:50%; margin:0 auto 16px;
+    background:linear-gradient(135deg, var(--gold), var(--ruby));
+    border:none; color:#3a2240; font-size:30px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 8px 22px rgba(240,189,102,.4);
+  }
+  .dict-card p{ font-size:13px; opacity:.8; margin:0; font-weight:600;}
+  .dict-input{
+    width:100%; padding:14px 16px; border-radius:16px; margin-top:16px;
+    border:1px solid var(--glass-border); background:rgba(255,255,255,.12);
+    color:var(--cream); font-size:16px; font-family:'Quicksand',sans-serif; font-weight:600;
+    text-align:center; outline:none;
+  }
+  .dict-input::placeholder{ color:rgba(255,255,255,.55); }
+  .feedback{ margin-top:16px; padding:16px; border-radius:16px; text-align:center; }
+  .feedback.ok{ background:rgba(127,220,166,.25); border:1px solid rgba(127,220,166,.6);}
+  .feedback.no{ background:rgba(236,127,160,.25); border:1px solid rgba(236,127,160,.6);}
+  .feedback .fb-hanzi{ font-family:'Noto Sans SC',sans-serif; font-size:32px; font-weight:700; margin-bottom:4px;}
+  .feedback .fb-py{ font-size:15px; font-weight:700; margin-bottom:2px;}
+  .feedback .fb-vi{ font-size:13px; opacity:.85;}
+
+  /* ---------- typing (luyện gõ) ---------- */
+  .typing-prompt{ text-align:center; padding:22px 16px; margin-bottom:16px;}
+  .typing-prompt .label{ font-size:12px; opacity:.75; font-weight:700; letter-spacing:.5px; margin-bottom:6px;}
+  .typing-prompt .vi-meaning{ font-family:'Baloo 2',sans-serif; font-size:21px; font-weight:700;}
+  .answer-slots{
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:16px 0;
+  }
+  .slot{
+    width:52px; height:58px; border-radius:14px;
+    border:1px dashed var(--glass-border); background:rgba(255,255,255,.08);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Sans SC',sans-serif; font-size:28px; font-weight:700;
+  }
+  .slot.filled{ border-style:solid; background:rgba(255,255,255,.18); }
+  .tile-pool{
+    display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0;
+  }
+  .tile{
+    width:52px; height:58px; border-radius:14px;
+    background:var(--glass-strong); border:1px solid var(--glass-border);
+    font-family:'Noto Sans SC',sans-serif; font-size:26px; font-weight:700; color:var(--cream);
+    cursor:pointer; backdrop-filter:blur(8px);
+  }
+  .tile:disabled{ opacity:.25; cursor:default; }
+  .alt-input-label{ text-align:center; font-size:11.5px; opacity:.7; margin:14px 0 6px; font-weight:600; }
+
+  /* ---------- translate ---------- */
+  .vi-phrase-card{ text-align:center; padding:26px 16px; margin-bottom:16px;}
+  .vi-phrase-card .label{ font-size:12px; opacity:.75; font-weight:700; letter-spacing:.5px; margin-bottom:8px;}
+  .vi-phrase-card .phrase{ font-family:'Baloo 2',sans-serif; font-size:22px; font-weight:700; }
+
+  /* ---------- grammar ---------- */
+  .grammar-list{ display:flex; flex-direction:column; gap:14px; }
+  .grammar-item h4{
+    font-family:'Baloo 2',sans-serif; font-size:16px; margin:0 0 8px; font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .grammar-item p{ margin:0 0 8px; font-size:13.5px; line-height:1.7; opacity:.9; }
+  .grammar-item .ex{
+    font-size:13.5px; background:rgba(255,255,255,.08); border-radius:12px; padding:10px 12px;
+    line-height:1.6;
+  }
+  .grammar-item .ex b{ font-family:'Noto Sans SC',sans-serif; font-size:16px; }
+
+  /* ---------- toast ---------- */
+  #toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:rgba(44,34,68,.92); border:1px solid var(--glass-border);
+    color:var(--cream); padding:12px 20px; border-radius:16px; font-size:13.5px; font-weight:600;
+    backdrop-filter:blur(10px); z-index:50; opacity:0; transition:all .3s ease; pointer-events:none;
+    max-width:90%; text-align:center;
+  }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  ::-webkit-scrollbar{ display:none; }
+</style>
+</head>
+<body>
+
+<div class="bg-video-wrap">
+  <video autoplay muted loop playsinline>
+    <source src="tạo_cho_tôi_video_ảnh_động_có.mp4" type="video/mp4">
+  </video>
+</div>
+<div class="bg-overlay"></div>
+
+<div class="app-shell" id="app">
+
+  <!-- ============ HOME ============ -->
+  <section class="screen active" id="screen-home">
+    <div class="brand">
+      <div class="moon"></div>
+      <div class="brand-text">
+        <h1>Nguyệt Quang Viên</h1>
+        <p>Học tiếng Trung dưới ánh trăng 🌙</p>
+      </div>
+    </div>
+
+    <div class="home-hero">
+      <h2>Chọn cấp độ HSK</h2>
+      <p>Mỗi cấp độ là một góc nhỏ trong khu vườn từ vựng. Bắt đầu với HSK1 để gặp những người bạn đầu tiên trên hành trình học tiếng Trung của bạn.</p>
+    </div>
+
+    <div class="gem-grid">
+      <div class="gem-card hsk1" onclick="goHSK1()">
+        <div class="facet"></div>
+        <h3>HSK 1</h3>
+        <span class="tag">Bắt đầu ngay</span>
+      </div>
+      <div class="gem-card hsk2" onclick="lockedToast(2)">
+        <span class="lock">🔒</span>
+        <div class="facet"></div>
+        <h3>HSK 2</h3>
+        <span class="tag">Sắp ra mắt</span>
+      </div>
+      <div class="gem-card hsk3" onclick="lockedToast(3)">
+        <span class="lock">🔒</span>
+        <div class="facet"></div>
+        <h3>HSK 3</h3>
+        <span class="tag">Sắp ra mắt</span>
+      </div>
+      <div class="gem-card hsk4" onclick="lockedToast(4)">
+        <span class="lock">🔒</span>
+        <div class="facet"></div>
+        <h3>HSK 4</h3>
+        <span class="tag">Sắp ra mắt</span>
+      </div>
+    </div>
+
+    <div class="home-footer">
+      <span class="gem"></span><br>
+      Vườn từ vựng dưới ánh trăng · 14 từ vựng HSK1 đầu tiên
+    </div>
+  </section>
+
+  <!-- ============ HSK1 MENU ============ -->
+  <section class="screen" id="screen-hsk1">
+    <div class="topbar">
+      <div class="back-btn" onclick="showScreen('screen-home')">←</div>
+      <div class="topbar-title">HSK 1<small>14 từ vựng cơ bản · 6 cách luyện</small></div>
+    </div>
+    <div class="mode-list">
+      <div class="mode-card" onclick="openFlashcards()">
+        <div class="mode-icon">🎴</div>
+        <div class="mode-text"><h4>Thẻ ghi nhớ</h4><p>Lật thẻ để học chữ Hán, pinyin và nghĩa tiếng Việt</p></div>
+        <div class="mode-arrow">›</div>
+      </div>
+      <div class="mode-card" onclick="openQuiz()">
+        <div class="mode-icon">✅</div>
+        <div class="mode-text"><h4>Trắc nghiệm</h4><p>Chọn nghĩa đúng trong 4 lựa chọn A, B, C, D</p></div>
+        <div class="mode-arrow">›</div>
+      </div>
+      <div class="mode-card" onclick="openDictation()">
+        <div class="mode-icon">🎧</div>
+        <div class="mode-text"><h4>Chính tả</h4><p>Nghe phát âm và viết lại bằng pinyin</p></div>
+        <div class="mode-arrow">›</div>
+      </div>
+      <div class="mode-card" onclick="openTyping()">
+        <div class="mode-icon">⌨️</div>
+        <div class="mode-text"><h4>Luyện gõ</h4><p>Ghép chữ Hán đúng với nghĩa tiếng Việt cho sẵn</p></div>
+        <div class="mode-arrow">›</div>
+      </div>
+      <div class="mode-card" onclick="openTranslate()">
+        <div class="mode-icon">🔁</div>
+        <div class="mode-text"><h4>Dịch Việt – Trung</h4><p>Chọn câu tiếng Trung tương ứng với câu tiếng Việt</p></div>
+        <div class="mode-arrow">›</div>
+      </div>
+      <div class="mode-card" onclick="openGrammar()">
+        <div class="mode-icon">📜</div>
+        <div class="mode-text"><h4>Ngữ pháp</h4><p>Mẹo nhỏ về cách dùng các từ trong bài</p></div>
+        <div class="mode-arrow">›</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FLASHCARDS ============ -->
+  <section class="screen" id="screen-flashcards">
+    <div class="topbar">
+      <div class="back-btn" onclick="showScreen('screen-hsk1')">←</div>
+      <div class="topbar-title">Thẻ ghi nhớ<small>Chạm vào thẻ để xem nghĩa</small></div>
+    </div>
+    <div class="fc-stage">
+      <div class="fc-progress" id="fc-progress">1 / 14</div>
+      <div class="flashcard-wrap">
+        <div class="flashcard" id="flashcard" onclick="Flash.flip()">
+          <div class="fc-face fc-front">
+            <div class="fc-hanzi" id="fc-hanzi">你</div>
+            <div class="fc-pinyin" id="fc-pinyin">nǐ</div>
+            <div class="fc-hint">chạm để xem nghĩa</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-vi" id="fc-vi">bạn / anh / chị</div>
+            <div class="fc-hint">chạm để quay lại</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-circle" onclick="Flash.prev()">‹</button>
+        <button class="btn btn-circle" onclick="Flash.speak()">🔊</button>
+        <button class="btn btn-circle" onclick="Flash.next()">›</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-block" onclick="Flash.shuffleDeck()">🔀 Trộn thẻ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="screen" id="screen-quiz">
+    <div class="topbar">
+      <div class="back-btn" onclick="showScreen('screen-hsk1')">←</div>
+      <div class="topbar-title">Trắc nghiệm<small>Chọn nghĩa tiếng Việt đúng</small></div>
+    </div>
+    <div id="quiz-body"></div>
+  </section>
+
+  <!-- ============ DICTATION ============ -->
+  <section class="screen" id="screen-dictation">
+    <div class="topbar">
+      <div class="back-btn" onclick="showScreen('screen-hsk1')">←</div>
+      <div class="topbar-title">Chính tả<small>Nghe và viết lại bằng pinyin</small></div>
+    </div>
+    <div id="dict-body"></div>
+  </section>
+
+  <!-- ============ TYPING (LUYỆN GÕ) ============ -->
+  <section class="screen" id="screen-typing">
+    <div class="topbar">
+      <div class="back-btn" onclick="showScreen('screen-hsk1')">←</div>
+      <div class="topbar-title">Luyện gõ<small>Ghép chữ Hán theo nghĩa</small></div>
+    </div>
+    <div id="typing-body"></div>
+  </section>
+
+  <!-- ============ TRANSLATE ============ -->
+  <section class="screen" id="screen-translate">
+    <div class="topbar">
+      <div class="back-btn" onclick="showScreen('screen-hsk1')">←</div>
+      <div class="topbar-title">Dịch Việt – Trung<small>Chọn câu tiếng Trung tương ứng</small></div>
+    </div>
+    <div id="translate-body"></div>
+  </section>
+
+  <!-- ============ GRAMMAR ============ -->
+  <section class="screen" id="screen-grammar">
+    <div class="topbar">
+      <div class="back-btn" onclick="showScreen('screen-hsk1')">←</div>
+      <div class="topbar-title">Ngữ pháp<small>Cách dùng từ trong bài HSK1</small></div>
+    </div>
+    <div class="panel grammar-list">
+      <div class="grammar-item">
+        <h4><span class="gem"></span> Xưng hô: 你 và 您</h4>
+        <p>你 (nǐ) là cách gọi "bạn / anh / chị" thông thường, dùng với người ngang hàng hoặc thân quen. 您 (nín) là cách gọi lịch sự hơn, dùng với người lớn tuổi, cấp trên hoặc khi muốn thể hiện sự tôn trọng.</p>
+        <div class="ex"><b>你好</b> – chào một người bạn ngang hàng &nbsp;|&nbsp; <b>您好</b> – chào một cách trang trọng, lễ phép</div>
+      </div>
+      <div class="grammar-item">
+        <h4><span class="gem"></span> Số nhiều với 们</h4>
+        <p>Thêm 们 (men) sau đại từ để chỉ số nhiều. 你们 nghĩa là "các bạn / các anh chị", còn 您们 là dạng số nhiều lịch sự của 您, dùng khi nói chuyện trang trọng với nhiều người.</p>
+        <div class="ex"><b>您们</b> = nín + men → "quý vị" (số nhiều)</div>
+      </div>
+      <div class="grammar-item">
+        <h4><span class="gem"></span> Tính từ làm vị ngữ với 好</h4>
+        <p>Trong tiếng Trung, tính từ như 好 (hǎo – tốt/khỏe) có thể đứng ngay sau chủ ngữ để làm vị ngữ, không cần động từ "là". Cấu trúc: chủ ngữ + 好.</p>
+        <div class="ex"><b>我好</b> = tôi + khỏe → "tôi khỏe" &nbsp;|&nbsp; <b>你对</b> = bạn + đúng → "bạn đúng"</div>
+      </div>
+      <div class="grammar-item">
+        <h4><span class="gem"></span> Phủ định với 不</h4>
+        <p>不 (bù) đặt trước tính từ hoặc động từ để tạo câu phủ định, tương đương "không" trong tiếng Việt.</p>
+        <div class="ex"><b>不好</b> = không tốt/không khỏe &nbsp;|&nbsp; <b>我不好</b> = tôi không khỏe</div>
+      </div>
+      <div class="grammar-item">
+        <h4><span class="gem"></span> Lời chào: 你好 / 您好</h4>
+        <p>你好 và 您好 là hai cách chào phổ biến nhất trong tiếng Trung, dùng được ở hầu hết mọi tình huống. 您好 mang sắc thái lịch sự hơn, thường dùng khi gặp người lớn tuổi, khách hàng hoặc trong môi trường công việc.</p>
+        <div class="ex"><b>你好</b> – xin chào (thân mật) &nbsp;|&nbsp; <b>您好</b> – xin chào (trang trọng)</div>
+      </div>
+      <div class="grammar-item">
+        <h4><span class="gem"></span> Xin lỗi và đáp lại</h4>
+        <p>对不起 (duìbuqǐ) dùng để xin lỗi. Khi nghe ai đó xin lỗi, câu đáp lại thường dùng là 没关系 (méiguānxi), nghĩa là "không sao / không có gì".</p>
+        <div class="ex">A: <b>对不起</b>! &nbsp;→&nbsp; B: <b>没关系</b>.</div>
+      </div>
+      <div class="grammar-item">
+        <h4><span class="gem"></span> Khẳng định và phủ định với 对</h4>
+        <p>对 (duì) nghĩa là "đúng / phải", dùng để xác nhận điều ai đó nói là chính xác. Kết hợp với 不 ta có 不对 (sai, không đúng).</p>
+        <div class="ex"><b>你对</b> = bạn nói đúng &nbsp;|&nbsp; <b>不对</b> = không đúng / sai</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= DATA ================= */
+const VOCAB = [
+  {cn:"你",       py:"nǐ",        vi:"bạn / anh / chị"},
+  {cn:"好",       py:"hǎo",       vi:"tốt / khỏe / xin chào"},
+  {cn:"您",       py:"nín",       vi:"ngài / quý vị"},
+  {cn:"您们",     py:"nínmen",    vi:"quý vị (số nhiều)"},
+  {cn:"对不起",   py:"duìbuqǐ",   vi:"xin lỗi"},
+  {cn:"没关系",   py:"méiguānxi", vi:"không sao"},
+  {cn:"对",       py:"duì",       vi:"đúng / phải"},
+  {cn:"不",       py:"bù",        vi:"không"},
+  {cn:"你对",     py:"nǐ duì",    vi:"bạn đúng"},
+  {cn:"不好",     py:"bù hǎo",    vi:"không tốt / không khỏe"},
+  {cn:"我好",     py:"wǒ hǎo",    vi:"tôi khỏe"},
+  {cn:"我不好",   py:"wǒ bù hǎo", vi:"tôi không khỏe"},
+  {cn:"你好",     py:"nǐ hǎo",    vi:"xin chào"},
+  {cn:"您好",     py:"nín hǎo",   vi:"xin chào (trang trọng)"}
+];
+
+const UNIQUE_CHARS = [...new Set(VOCAB.flatMap(v => Array.from(v.cn)))];
+
+/* ================= HELPERS ================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN';
+  u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
+function normPinyin(s){
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[0-9]/g,'')
+    .replace(/\s+/g,'')
+    .trim();
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=> t.classList.remove('show'), 2200);
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHSK1(){ showScreen('screen-hsk1'); }
+function lockedToast(n){ toast(`HSK ${n} đang được biên soạn — hẹn gặp lại bạn ở phiên bản sau! 🌙`); }
+
+/* ================= FLASHCARDS ================= */
+const Flash = {
+  order: shuffle(VOCAB.map((_,i)=>i)),
+  idx: 0,
+  flipped: false,
+  render(){
+    const v = VOCAB[this.order[this.idx]];
+    document.getElementById('fc-hanzi').textContent = v.cn;
+    document.getElementById('fc-pinyin').textContent = v.py;
+    document.getElementById('fc-vi').textContent = v.vi;
+    document.getElementById('fc-progress').textContent = `${this.idx+1} / ${VOCAB.length}`;
+    document.getElementById('flashcard').classList.remove('flipped');
+    this.flipped = false;
+  },
+  flip(){
+    this.flipped = !this.flipped;
+    document.getElementById('flashcard').classList.toggle('flipped', this.flipped);
+  },
+  next(){ this.idx = (this.idx+1) % VOCAB.length; this.render(); },
+  prev(){ this.idx = (this.idx-1+VOCAB.length) % VOCAB.length; this.render(); },
+  speak(){ speak(VOCAB[this.order[this.idx]].cn); },
+  shuffleDeck(){ this.order = shuffle(VOCAB.map((_,i)=>i)); this.idx = 0; this.render(); toast('Đã trộn lại bộ thẻ!'); }
+};
+function openFlashcards(){ Flash.render(); showScreen('screen-flashcards'); }
+
+/* ================= QUIZ (cn -> vi) & TRANSLATE (vi -> cn) ================= */
+function makeQuiz(direction, bodyId){
+  return {
+    direction, bodyId,
+    order: shuffle(VOCAB.map((_,i)=>i)),
+    qi: 0,
+    score: 0,
+    answered: false,
+    options: [],
+    correctIdx: 0,
+
+    init(){ this.order = shuffle(VOCAB.map((_,i)=>i)); this.qi=0; this.score=0; this.renderQuestion(); },
+
+    buildOptions(){
+      const correct = this.order[this.qi];
+      const others = shuffle(VOCAB.map((_,i)=>i).filter(i=>i!==correct)).slice(0,3);
+      const opts = shuffle([correct, ...others]);
+      this.options = opts;
+      this.correctIdx = opts.indexOf(correct);
+      this.answered = false;
+    },
+
+    renderQuestion(){
+      if(this.qi >= VOCAB.length){ this.renderResult(); return; }
+      this.buildOptions();
+      const v = VOCAB[this.order[this.qi]];
+      const letters = ['A','B','C','D'];
+      let promptHtml, optsHtml;
+      if(this.direction === 'cn2vi'){
+        promptHtml = `
+          <div class="panel quiz-card">
+            <div class="quiz-hanzi">${v.cn}</div>
+            <div class="quiz-pinyin">${v.py}</div>
+            <div class="quiz-prompt">Từ này có nghĩa là gì?</div>
+          </div>`;
+        optsHtml = this.options.map((idx,i)=>`
+          <div class="option" data-i="${i}" onclick="${this.bodyId}Quiz.pick(${i})">
+            <div class="opt-letter">${letters[i]}</div>
+            <div>${VOCAB[idx].vi}</div>
+          </div>`).join('');
+      } else {
+        promptHtml = `
+          <div class="panel vi-phrase-card">
+            <div class="label">CÂU TIẾNG VIỆT</div>
+            <div class="phrase">${v.vi}</div>
+          </div>
+          <div style="text-align:center;font-size:13px;opacity:.75;font-weight:600;margin-bottom:10px;">Chọn câu tiếng Trung tương ứng:</div>`;
+        optsHtml = this.options.map((idx,i)=>`
+          <div class="option" data-i="${i}" onclick="${this.bodyId}Quiz.pick(${i})">
+            <div class="opt-letter">${letters[i]}</div>
+            <div><div class="opt-hanzi">${VOCAB[idx].cn}</div><span class="opt-py">${VOCAB[idx].py}</span></div>
+          </div>`).join('');
+      }
+      document.getElementById(this.bodyId+'-body').innerHTML = `
+        <div class="quiz-top"><span>Câu ${this.qi+1} / ${VOCAB.length}</span><span>Điểm: ${this.score}</span></div>
+        ${promptHtml}
+        <div class="options">${optsHtml}</div>
+        <div class="quiz-actions" id="${this.bodyId}-actions"></div>
+      `;
+    },
+
+    pick(i){
+      if(this.answered) return;
+      this.answered = true;
+      const opts = document.querySelectorAll(`#${this.bodyId}-body .option`);
+      opts.forEach((el,idx)=>{
+        el.classList.add('disabled');
+        if(idx === this.correctIdx) el.classList.add('correct');
+        else if(idx === i) el.classList.add('wrong');
+      });
+      if(i === this.correctIdx) this.score++;
+      document.getElementById(this.bodyId+'-actions').innerHTML =
+        `<button class="btn btn-primary btn-block" onclick="${this.bodyId}Quiz.next()">Tiếp theo →</button>`;
+    },
+
+    next(){ this.qi++; this.renderQuestion(); },
+
+    renderResult(){
+      const pct = Math.round(this.score/VOCAB.length*100);
+      let msg = 'Cố lên nào, học lại một chút nhé! 🌱';
+      if(pct >= 80) msg = 'Xuất sắc! Bạn đã nắm rất chắc rồi 🌟';
+      else if(pct >= 50) msg = 'Khá tốt! Ôn lại vài từ là sẽ trọn vẹn 🌙';
+      document.getElementById(this.bodyId+'-body').innerHTML = `
+        <div class="panel result-box">
+          <div class="big">${this.score} / ${VOCAB.length}</div>
+          <p>${msg}</p>
+          <button class="btn btn-primary btn-block" style="margin-top:18px" onclick="${this.bodyId}Quiz.init()">🔁 Làm lại</button>
+        </div>`;
+    }
+  };
+}
+const quizQuiz = makeQuiz('cn2vi','quiz');
+const translateQuiz = makeQuiz('vi2cn','translate');
+quizQuiz.bodyId = 'quiz';
+translateQuiz.bodyId = 'translate';
+// expose with expected global names used in onclick strings
+window.quizQuiz = quizQuiz;
+window.translateQuiz = translateQuiz;
+
+function openQuiz(){ quizQuiz.init(); showScreen('screen-quiz'); }
+function openTranslate(){ translateQuiz.init(); showScreen('screen-translate'); }
+
+/* ================= DICTATION ================= */
+const Dict = {
+  order: shuffle(VOCAB.map((_,i)=>i)),
+  qi: 0,
+  init(){ this.order = shuffle(VOCAB.map((_,i)=>i)); this.qi = 0; this.render(); },
+  render(){
+    if(this.qi >= VOCAB.length){
+      document.getElementById('dict-body').innerHTML = `
+        <div class="panel result-box">
+          <div class="big">Hoàn thành!</div>
+          <p>Bạn đã luyện chính tả hết ${VOCAB.length} từ trong bài.</p>
+          <button class="btn btn-primary btn-block" style="margin-top:18px" onclick="Dict.init()">🔁 Luyện lại</button>
+        </div>`;
+      return;
+    }
+    document.getElementById('dict-body').innerHTML = `
+      <div class="quiz-top"><span>Câu ${this.qi+1} / ${VOCAB.length}</span><span></span></div>
+      <div class="panel dict-card">
+        <button class="dict-play" onclick="Dict.play()">🔊</button>
+        <p>Nghe và gõ lại bằng <b>pinyin</b> (không cần dấu thanh cũng được)</p>
+        <input type="text" class="dict-input" id="dict-input" placeholder="ví dụ: ni hao" autocomplete="off" autocapitalize="off">
+        <div class="btn-row">
+          <button class="btn btn-block" onclick="Dict.play()">🔁 Nghe lại</button>
+          <button class="btn btn-primary btn-block" onclick="Dict.check()">Kiểm tra</button>
+        </div>
+        <div id="dict-feedback"></div>
+      </div>
+    `;
+    setTimeout(()=>this.play(), 300);
+  },
+  play(){ speak(VOCAB[this.order[this.qi]].cn); },
+  check(){
+    const v = VOCAB[this.order[this.qi]];
+    const input = document.getElementById('dict-input').value;
+    const correct = normPinyin(input) === normPinyin(v.py);
+    document.getElementById('dict-feedback').innerHTML = `
+      <div class="feedback ${correct?'ok':'no'}">
+        <div class="fb-hanzi">${v.cn}</div>
+        <div class="fb-py">${v.py}</div>
+        <div class="fb-vi">${v.vi}</div>
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:12px" onclick="Dict.next()">Câu tiếp →</button>
+    `;
+    toast(correct ? 'Chính xác! 🎉' : 'Chưa đúng, xem đáp án nhé!');
+  },
+  next(){ this.qi++; this.render(); }
+};
+function openDictation(){ Dict.init(); showScreen('screen-dictation'); }
+
+/* ================= TYPING (LUYỆN GÕ) ================= */
+const Typing = {
+  order: shuffle(VOCAB.map((_,i)=>i)),
+  qi: 0,
+  tiles: [],   // {char, used}
+  answer: [],  // indices into tiles
+  init(){ this.order = shuffle(VOCAB.map((_,i)=>i)); this.qi = 0; this.render(); },
+  render(){
+    if(this.qi >= VOCAB.length){
+      document.getElementById('typing-body').innerHTML = `
+        <div class="panel result-box">
+          <div class="big">Hoàn thành!</div>
+          <p>Bạn đã luyện gõ chữ Hán cho toàn bộ ${VOCAB.length} từ.</p>
+          <button class="btn btn-primary btn-block" style="margin-top:18px" onclick="Typing.init()">🔁 Luyện lại</button>
+        </div>`;
+      return;
+    }
+    const v = VOCAB[this.order[this.qi]];
+    const target = Array.from(v.cn);
+    const decoyPool = shuffle(UNIQUE_CHARS.filter(c=>!target.includes(c)));
+    const decoyCount = Math.min(Math.max(8-target.length,2), decoyPool.length);
+    const tileChars = shuffle([...target, ...decoyPool.slice(0,decoyCount)]);
+    this.tiles = tileChars.map(c=>({char:c, used:false}));
+    this.answer = [];
+    this.target = target;
+
+    document.getElementById('typing-body').innerHTML = `
+      <div class="quiz-top"><span>Từ ${this.qi+1} / ${VOCAB.length}</span><span></span></div>
+      <div class="panel typing-prompt">
+        <div class="label">NGHĨA TIẾNG VIỆT</div>
+        <div class="vi-meaning">${v.vi}</div>
+      </div>
+      <div class="answer-slots" id="typing-slots"></div>
+      <div class="tile-pool" id="typing-tiles"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="Typing.backspace()">⌫ Xóa</button>
+        <button class="btn btn-primary btn-block" onclick="Typing.check()">Kiểm tra</button>
+      </div>
+      <div class="alt-input-label">Hoặc gõ trực tiếp nếu bạn có bàn phím tiếng Trung:</div>
+      <input type="text" class="dict-input" id="typing-input" placeholder="输入汉字" autocomplete="off">
+      <div id="typing-feedback"></div>
+    `;
+    this.renderSlots();
+    this.renderTiles();
+  },
+  renderSlots(){
+    const n = this.target.length;
+    let html = '';
+    for(let i=0;i<n;i++){
+      const tIdx = this.answer[i];
+      const ch = tIdx!==undefined ? this.tiles[tIdx].char : '';
+      html += `<div class="slot ${ch?'filled':''}">${ch}</div>`;
+    }
+    document.getElementById('typing-slots').innerHTML = html;
+  },
+  renderTiles(){
+    document.getElementById('typing-tiles').innerHTML = this.tiles.map((t,i)=>`
+      <button class="tile" ${t.used?'disabled':''} onclick="Typing.pick(${i})">${t.char}</button>
+    `).join('');
+  },
+  pick(i){
+    if(this.tiles[i].used) return;
+    if(this.answer.length >= this.target.length) return;
+    this.tiles[i].used = true;
+    this.answer.push(i);
+    this.renderSlots(); this.renderTiles();
+  },
+  backspace(){
+    if(this.answer.length===0) return;
+    const last = this.answer.pop();
+    this.tiles[last].used = false;
+    this.renderSlots(); this.renderTiles();
+  },
+  check(){
+    const v = VOCAB[this.order[this.qi]];
+    const tileWord = this.answer.map(i=>this.tiles[i].char).join('');
+    const typedWord = document.getElementById('typing-input').value.trim();
+    const correct = tileWord === v.cn || typedWord === v.cn;
+    document.getElementById('typing-feedback').innerHTML = `
+      <div class="feedback ${correct?'ok':'no'}" style="margin-top:14px">
+        <div class="fb-hanzi">${v.cn}</div>
+        <div class="fb-py">${v.py}</div>
+        <div class="fb-vi">${v.vi}</div>
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:12px" onclick="Typing.next()">Từ tiếp →</button>
+    `;
+    toast(correct ? 'Chính xác! 🎉' : 'Chưa đúng, xem đáp án nhé!');
+  },
+  next(){ this.qi++; this.render(); }
+};
+function openTyping(){ Typing.init(); showScreen('screen-typing'); }
+
+/* ================= GRAMMAR ================= */
+function openGrammar(){ showScreen('screen-grammar'); }
+</script>
+</body>
+</html>
